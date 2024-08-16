@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Immersive Video Demo</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+</head>
+<body>
+    <a-scene antialias="true" pixel-ratio="1" vr-mode-ui="enabled: true">
+        <a-assets>
+            <video id="WristGrabs" preload="auto" playsinline controls>
+                <source src="ReceptionConflict1.mp4" type="video/mp4">
+                <source src="ReceptionConflict12.webm" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+                        <img id="playIcon" src="play.png">
+            <img id="hotspotIcon" src="hotspot.png">
+        </a-assets>
+
+        <a-camera>
+            <a-cursor raycaster="objects: .clickable" fuse="true" fuse-timeout="1500"></a-cursor>
+        </a-camera>
+
+        <!-- Video Sphere -->
+        <a-videosphere id="videoSphere" src="#WristGrabs" rotation="0 -90 0"></a-videosphere>
+
+        <!-- Play Button -->
+        <a-image 
+            id="playButton" 
+            src="#playIcon" 
+            position="0 2 -2" 
+            scale="0.5 0.5 0.5"
+            class="clickable"
+            play-video>
+        </a-image>
+
+        <!-- Initial Instruction Label -->
+        <a-text value="Look here to begin" align="center" position="0 1.7 -2" scale="1 1 1" visible="true" id="label0"></a-text>
+
+        <!-- Hotspot 1 with Label -->
+        <a-image id="hotspot1" src="#hotspotIcon" color="#FF6347" position="1 2 -3" scale="0.5 0.5 0.5" visible="false" class="clickable" hotspot></a-image>
+        <a-text value="Run" align="center" position="1 2 -3" scale="1 1 1" visible="false" id="label1"></a-text>
+
+        <!-- Hotspot 2 with Label -->
+        <a-image id="hotspot2" src="#hotspotIcon" color="#4682B4" position="-2 1.5 -3" scale="0.5 0.5 0.5" visible="false" class="clickable" hotspot></a-image>
+        <a-text value="Hide" align="center" position="-2 1.5 -3" scale="1 1 1" visible="false" id="label2"></a-text>
+
+        <!-- Hotspot 3 with Label -->
+        <a-image id="hotspot3" src="#hotspotIcon" color="#32CD32" position="0 3 -4" scale="0.5 0.5 0.5" visible="false" class="clickable" hotspot></a-image>
+        <a-text value="Tell" align="center" position="0 3 -4" scale="1 1 1" visible="false" id="label3"></a-text>
+     </a-scene>
+
+    <script>
+        AFRAME.registerComponent('play-video', {
+            init: function () {
+                var videoEl = document.querySelector('#WristGrabs');
+                var playButtonEl = this.el;
+                var label0El = document.querySelector('#label0');
+
+                // Pause the video initially
+                videoEl.pause();
+                
+                playButtonEl.addEventListener('click', function () {
+                    label0El.setAttribute('visible', false);  // Hide label0 when video starts
+                    videoEl.play();
+                    playButtonEl.setAttribute('visible', false);  // Hide play button after click
+                    
+                    // Pause video and show hotspots and labels after 12 seconds
+                    setTimeout(function() {
+                        videoEl.pause();  // Pause the video
+                        document.querySelector('#hotspot1').setAttribute('visible', true);
+                        document.querySelector('#hotspot2').setAttribute('visible', true);
+                        document.querySelector('#hotspot3').setAttribute('visible', true);
+                        document.querySelector('#label1').setAttribute('visible', true);
+                        document.querySelector('#label2').setAttribute('visible', true);
+                        document.querySelector('#label3').setAttribute('visible', true);
+                    }, 12000);  // Adjust this timing as needed
+                });
+            }
+        });
+
+        AFRAME.registerComponent('hotspot', {
+            init: function () {
+                var videoEl = document.querySelector('#WristGrabs');
+                var hotspotEl = this.el;
+
+                hotspotEl.addEventListener('click', function () {  // Changed from 'fuse' to 'click'
+                    // Hide all hotspots and labels
+                    document.querySelector('#hotspot1').setAttribute('visible', false);
+                    document.querySelector('#hotspot2').setAttribute('visible', false);
+                    document.querySelector('#hotspot3').setAttribute('visible', false);
+                    document.querySelector('#label1').setAttribute('visible', false);
+                    document.querySelector('#label2').setAttribute('visible', false);
+                    document.querySelector('#label3').setAttribute('visible', false);
+                    
+                    // Resume video playback
+                    videoEl.play();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
